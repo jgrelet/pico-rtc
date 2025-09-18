@@ -10,7 +10,7 @@ import (
 	"github.com/soypat/cyw43439/examples/common"
 	"github.com/soypat/seqs/eth/ntp"
 	"github.com/soypat/seqs/stacks"
-	"github/jgrelet/pico-rtc/rtcutil"
+	"github.com/jgrelet/pico-rtc/rtcutil"
 )
 
 //const ntpServer = "pool.ntp.org:123"
