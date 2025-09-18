@@ -9,5 +9,5 @@ require (
 
 require (
 	github.com/tinygo-org/pio v0.2.0 // indirect
-	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
+	golang.org/x/exp v0.0.0-20250911091902-df9299821621 // indirect
 )

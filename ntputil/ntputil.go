@@ -30,7 +30,7 @@ type ntpConn struct {
 	stack    *stacks.PortStack
 }
 
-func newNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn, error) {
+func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn, error) {
 	logger := slog.New(slog.NewTextHandler(machine.Serial, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	}))
@@ -72,7 +72,7 @@ func (c *ntpConn) String() string {
 	return fmt.Sprintf("NTP conn to %s via %s", c.Hostname, c.stack.Addr())
 }
 
-func (c *ntpConn) getNTPTime() (time.Time, error) {
+func (c *ntpConn) GetNTPTime() (time.Time, error) {
 	ntpaddr := c.addrs[0]
 	ntpc := stacks.NewNTPClient(c.stack, ntp.ClientPort)
 	fmt.Println("NTP request to", ntpaddr.String())
