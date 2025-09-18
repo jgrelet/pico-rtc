@@ -10,16 +10,7 @@ import (
 	"github.com/soypat/cyw43439/examples/common"
 	"github.com/soypat/seqs/eth/ntp"
 	"github.com/soypat/seqs/stacks"
-
-	/*
-		cd rtcutil/
-	    go mod init project/rtcutil
-	    go mod tidy
-	    cd ..
-	    echo "replace rtcutil => ./rtcutil" >> go.mod
-	    go mod tidy
-	*/
-	"rtcutil" // Utilitaires RTC, a remplacer avec mon github.com/jgrelet/rtcutil (après modif
+	"github/jgrelet/pico-rtc/rtcutil"
 )
 
 //const ntpServer = "pool.ntp.org:123"
