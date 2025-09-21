@@ -25,6 +25,7 @@ go.sum
 # ---- VS Code ----
 /.vscode
 .vscode
+.vscode/settings.json
 .history/
 *.code-workspace
 
@@ -32,3 +33,5 @@ go.sum
 .DS_Store
 Thumbs.db
 desktop.ini
+
+.gitignore
