@@ -1,0 +1,33 @@
+# ---- Go / TinyGo ----
+bin/
+pkg/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.uf2
+*.elf
+*.bin
+*.hex
+
+# Go modules
+go.sum
+
+# ---- Logs / Temp ----
+*.log
+*.tmp
+*.swp
+*.swo
+
+# ---- VS Code ----
+.vscode/
+.history/
+*.code-workspace
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+desktop.ini
