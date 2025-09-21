@@ -5,7 +5,8 @@ package ntputil
 import (
 	"fmt"
 	"log/slog"
-	"io"
+	_ "io"
+	"machine"
 	"net/netip"
 	"time"
 
@@ -31,11 +32,13 @@ type ntpConn struct {
 }
 
 func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn, error) {
-	/* logger := slog.New(slog.NewTextHandler(machine.Serial, &slog.HandlerOptions{
-		Level: nil,
-	})) */
-	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	logger := slog.New(slog.NewTextHandler(machine.Serial, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+	// Disable slog output from other packages during setup.
+	//logger = (slog.New(slog.NewTextHandler(io.Discard, nil)))
 	time.Sleep(100 * time.Millisecond)
+	// Configurer le Wi-Fi, DHCP, DNS, etc.
 	dhcpc, stack, _, err := common.SetupWithDHCP(common.SetupConfig{
 		Hostname:    hostname,
 		Logger:      logger,

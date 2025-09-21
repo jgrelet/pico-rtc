@@ -1,8 +1,9 @@
-module github.com/jgrelet/pico-rtc
+module pico-rtc
 
 go 1.25.0
 
 require (
+	github.com/jgrelet/pico-rtc v0.0.0-20250921065413-b8ab38b6e4cd
 	github.com/soypat/cyw43439 v0.0.0-20250505012923-830110c8f4af
 	github.com/soypat/seqs v0.0.0-20250630134107-01c3f05666ba
 )
