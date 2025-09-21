@@ -23,7 +23,8 @@ go.sum
 *.swo
 
 # ---- VS Code ----
-.vscode/
+/.vscode
+.vscode
 .history/
 *.code-workspace
 
