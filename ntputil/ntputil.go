@@ -5,7 +5,7 @@ package ntputil
 import (
 	"fmt"
 	"log/slog"
-	"machine"
+	"io"
 	"net/netip"
 	"time"
 
@@ -31,9 +31,10 @@ type ntpConn struct {
 }
 
 func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn, error) {
-	logger := slog.New(slog.NewTextHandler(machine.Serial, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
-	}))
+	/* logger := slog.New(slog.NewTextHandler(machine.Serial, &slog.HandlerOptions{
+		Level: nil,
+	})) */
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	time.Sleep(100 * time.Millisecond)
 	dhcpc, stack, _, err := common.SetupWithDHCP(common.SetupConfig{
 		Hostname:    hostname,
@@ -41,14 +42,16 @@ func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn,
 		RequestedIP: requestedIP,
 		UDPPorts:    udpPorts,
 	})
+	
 	if err != nil {
 		return nil, fmt.Errorf("setup failed: %w", err.Error())
 	}
+	// Obtenir l'adresse MAC de la passerelle (routeur)
 	routerhw, err := common.ResolveHardwareAddr(stack, dhcpc.Router())
 	if err != nil {
-		return nil, fmt.Errorf("router hwaddr resolving: %w", err.Error())
+		return nil, fmt.Errorf("router hwaddr resolving: %v", err.Error())
 	}
-
+	// Créer un résolveur DNS
 	resolver, err := common.NewResolver(stack, dhcpc)
 	if err != nil {
 		return nil, fmt.Errorf("resolver create: %w", err.Error())
@@ -69,7 +72,7 @@ func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn,
 }
 
 func (c *ntpConn) String() string {
-	return fmt.Sprintf("NTP conn to %s via %s", c.Hostname, c.stack.Addr())
+	return fmt.Sprintf("NTP conn to %s, IP: %s", c.Hostname, c.stack.Addr())
 }
 
 func (c *ntpConn) GetNTPTime() (time.Time, error) {

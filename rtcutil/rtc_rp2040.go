@@ -1,4 +1,4 @@
-//go:build pico || pico_w || pico2 || pico2_w
+//go:build tinygo && (pico || pico_w || rp2040)
 
 package rtcutil
 
