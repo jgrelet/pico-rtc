@@ -2,7 +2,7 @@ package rtcutil
 
 import "time"
 
-type rtcStub struct{}
+//type rtcStub struct{}
 
 // RTC est l’interface commune.
 type RTC interface {
