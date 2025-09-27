@@ -15,8 +15,16 @@ const (
 
 type rtcRP2040 struct{}
 
+// newRTC creates and returns a new instance of RTC implemented for the RP2040 platform.
 func newRTC() RTC { return &rtcRP2040{} }
 
+// Init1Hz initializes the RTC to generate a 1 Hz clock signal.
+// If clkRtcHz is zero, it defaults to 46,875 Hz (derived from XOSC 12 MHz / 256).
+// The function stops the RTC, waits for it to become inactive, and then sets
+// the clock divider to achieve a 1 Hz output frequency.
+//
+// Parameters:
+//   clkRtcHz - The input clock frequency to the RTC. If zero, defaults to 46,875 Hz.
 func (r *rtcRP2040) Init1Hz(clkRtcHz uint32) {
 	if clkRtcHz == 0 {
 		clkRtcHz = 46875 // XOSC 12 MHz / 256
@@ -32,6 +40,11 @@ func (r *rtcRP2040) Init1Hz(clkRtcHz uint32) {
 	drp.RTC.CLKDIV_M1.Set(uint32(divMinus1))
 }
 
+// Set configures the RP2040 RTC (Real-Time Clock) peripheral with the specified time.
+// It stops the RTC, waits for it to halt, sets the date and time registers, and then
+// reloads and enables the RTC, waiting for it to become active. The time is provided
+// as a time.Time value, and the function extracts year, month, day, weekday, hour,
+// minute, and second to program the hardware registers accordingly.
 func (r *rtcRP2040) Set(t time.Time) {
 	y, m, d := t.Date()
 	hh, mm, ss := t.Clock()
@@ -54,6 +67,10 @@ func (r *rtcRP2040) Set(t time.Time) {
 	}
 }
 
+// Now reads the current date and time from the RP2040 RTC registers and returns it as a time.Time value.
+// It ensures a consistent read by checking for a stable second value across consecutive reads to avoid
+// race conditions during a second rollover. The function extracts the year, month, day, hour, minute,
+// and second fields from the hardware registers and constructs a time.Time in UTC.
 func (r *rtcRP2040) Now() time.Time {
 	for {
 		// Lire RTC_0 PUIS RTC_1 et relire RTC_0 pour éviter le passage de seconde

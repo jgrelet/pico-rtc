@@ -31,6 +31,18 @@ type ntpConn struct {
 	stack    *stacks.PortStack
 }
 
+// NewNTPConn initializes a new NTP connection by configuring network settings, resolving the router's hardware address,
+// creating a DNS resolver, and resolving the NTP server's IP address.
+// It returns an ntpConn instance on success, or an error if any step fails.
+//
+// Parameters:
+//   - hostname: the desired hostname for the device.
+//   - requestedIP: the preferred IP address to request via DHCP.
+//   - udpPorts: the UDP port(s) to be used.
+//
+// Returns:
+//   - *ntpConn: a pointer to the initialized NTP connection.
+//   - error: an error if setup or resolution fails.
 func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn, error) {
 	logger := slog.New(slog.NewTextHandler(machine.Serial, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
@@ -74,10 +86,15 @@ func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn,
 	}, nil
 }
 
+// String returns a string representation of the ntpConn, including the hostname and IP address.
 func (c *ntpConn) String() string {
 	return fmt.Sprintf("NTP conn to %s, IP: %s", c.Hostname, c.stack.Addr())
 }
 
+// GetNTPTime sends an NTP request to the first configured NTP server address,
+// waits for the response, and returns the synchronized time.
+// The function initiates a non-blocking NTP request and waits until the request is complete.
+// It returns the calculated time based on the NTP offset, or an error if the request fails.
 func (c *ntpConn) GetNTPTime() (time.Time, error) {
 	ntpaddr := c.addrs[0]
 	ntpc := stacks.NewNTPClient(c.stack, ntp.ClientPort)

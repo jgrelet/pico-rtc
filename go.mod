@@ -7,6 +7,7 @@ require (
 	github.com/soypat/cyw43439 v0.0.0-20250505012923-830110c8f4af
 	github.com/soypat/seqs v0.0.0-20250630134107-01c3f05666ba
 	tinygo.org/x/drivers v0.33.0
+	tinygo.org/x/tinyfont v0.3.0
 )
 
 require (

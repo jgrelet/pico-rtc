@@ -17,5 +17,7 @@ type RTC interface {
 
 // NewRTC retourne l’implémentation courante (RP2040 ou RP2350) selon les build tags.
 // La définition concrète de NewRTC se trouve dans rtc_rp2040.go / rtc_rp2350.go / rtc_stub.go.
+// NewRTC creates and returns a new instance of RTC using the underlying implementation.
+// It abstracts the RTC initialization, allowing for easy creation of RTC objects.
 func NewRTC() RTC { return newRTC() }
 
