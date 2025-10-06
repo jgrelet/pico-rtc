@@ -24,7 +24,8 @@ func newRTC() RTC { return &rtcRP2040{} }
 // the clock divider to achieve a 1 Hz output frequency.
 //
 // Parameters:
-//   clkRtcHz - The input clock frequency to the RTC. If zero, defaults to 46,875 Hz.
+//
+//	clkRtcHz - The input clock frequency to the RTC. If zero, defaults to 46,875 Hz.
 func (r *rtcRP2040) Init1Hz(clkRtcHz uint32) {
 	if clkRtcHz == 0 {
 		clkRtcHz = 46875 // XOSC 12 MHz / 256
@@ -81,12 +82,12 @@ func (r *rtcRP2040) Now() time.Time {
 			continue
 		}
 
-		sec  := int(u0b & 0x3F)
-		min  := int((u0b >> 8) & 0x3F)
+		sec := int(u0b & 0x3F)
+		min := int((u0b >> 8) & 0x3F)
 		hour := int((u0b >> 16) & 0x1F)
-		day   := int(u1a & 0x1F)
+		day := int(u1a & 0x1F)
 		month := int((u1a >> 8) & 0x0F)
-		year  := int((u1a >> 12) & 0x0FFF)
+		year := int((u1a >> 12) & 0x0FFF)
 
 		return time.Date(year, time.Month(month), day, hour, min, sec, 0, time.UTC)
 	}

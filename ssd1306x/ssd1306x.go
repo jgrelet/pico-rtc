@@ -88,6 +88,6 @@ func (d *Display) WriteCentered(font *tinyfont.Font, text string, cx, y int16, c
 
 // --- Infos / accès bas-niveau ---
 
-func (d *Display) Width() int16              { return d.width }
-func (d *Display) Height() int16             { return d.height }
-func (d *Display) Device() *ssd1306.Device   { return &d.dev }
+func (d *Display) Width() int16            { return d.width }
+func (d *Display) Height() int16           { return d.height }
+func (d *Display) Device() *ssd1306.Device { return &d.dev }

@@ -66,4 +66,3 @@ func (r *rtcRP2350) Now() time.Time {
 func (r *rtcRP2350) nowTicks() uint64 {
 	return uint64(time.Now().UnixNano())
 }
-

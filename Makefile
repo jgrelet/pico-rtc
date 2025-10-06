@@ -1,22 +1,30 @@
-TARGET = pico-w
+TARGET = pico2-w
 RP2350 = pico2-w
 RP2040 = pico-w
-SOURCE = main.go
+#SOURCE = main.go
+SOURCE = .
 BINARY = main.uf2
 #LDFLAGS = -size short -monitor -scheduler tasks -gc=conservative -size=full -stack-size=20kb
-LDFLAGS = -size short -monitor #-tags $(TARGET)
+LDFLAGS = -size short -monitor 
 
 build:
-	tinygo build -o $(BINARY) $(LDFLAGS) -target $(TARGET) $(SOURCE)
+	tinygo build -o $(BINARY) -target $(TARGET) $(LDFLAGS) $(SOURCE)
 
 flash:
-	tinygo flash $(LDFLAGS) -target $(TARGET) $(SOURCE)
+	tinygo flash -target $(TARGET) $(LDFLAGS) $(SOURCE)
+
+info:
+	tinygo flash -target $(TARGET) -tags=info $(LDFLAGS) $(SOURCE) 
+
+debug:
+	tinygo flash -target $(TARGET) -tags=debug $(LDFLAGS) $(SOURCE) 
 	
 monitor: 
 	tinygo monitor -target=$(TARGET)	
 
 fmt:
 	go fmt *.go
+	go fmt logger/*.go
 
 clean:
 	-rm -f $(BINARY)

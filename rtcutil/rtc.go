@@ -20,4 +20,3 @@ type RTC interface {
 // NewRTC creates and returns a new instance of RTC using the underlying implementation.
 // It abstracts the RTC initialization, allowing for easy creation of RTC objects.
 func NewRTC() RTC { return newRTC() }
-

@@ -3,12 +3,11 @@
 package ntputil
 
 import (
-	"fmt"
 	"log/slog"
-	_ "io"
-	"machine"
+	"fmt"
 	"net/netip"
 	"time"
+	"pico-rtc/logger"
 
 	"github.com/soypat/cyw43439/examples/common"
 	"github.com/soypat/seqs/eth/ntp"
@@ -31,33 +30,29 @@ type ntpConn struct {
 	stack    *stacks.PortStack
 }
 
-// NewNTPConn initializes a new NTP connection by configuring network settings, resolving the router's hardware address,
-// creating a DNS resolver, and resolving the NTP server's IP address.
-// It returns an ntpConn instance on success, or an error if any step fails.
+// NewNTPConn initializes a new NTP connection by setting up network interfaces,
+// configuring DHCP, DNS, and resolving the NTP server address. It returns an
+// ntpConn instance on success, or an error if any step fails.
 //
 // Parameters:
 //   - hostname: the desired hostname for the device.
 //   - requestedIP: the preferred IP address to request via DHCP.
-//   - udpPorts: the UDP port(s) to be used.
+//   - udpPorts: the number of UDP ports to allocate.
+//   - logs: a logger instance for logging network events.
 //
 // Returns:
-//   - *ntpConn: a pointer to the initialized NTP connection.
-//   - error: an error if setup or resolution fails.
-func NewNTPConn(hostname string, requestedIP string, udpPorts uint16) (*ntpConn, error) {
-	logger := slog.New(slog.NewTextHandler(machine.Serial, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
-	}))
-	// Disable slog output from other packages during setup.
-	//logger = (slog.New(slog.NewTextHandler(io.Discard, nil)))
+//   - *ntpConn: a pointer to the initialized NTP connection structure.
+//   - error: an error if setup fails at any stage.
+func NewNTPConn(hostname string, requestedIP string, udpPorts uint16, logs *slog.Logger) (*ntpConn, error) {
 	time.Sleep(100 * time.Millisecond)
 	// Configurer le Wi-Fi, DHCP, DNS, etc.
 	dhcpc, stack, _, err := common.SetupWithDHCP(common.SetupConfig{
 		Hostname:    hostname,
-		Logger:      logger,
+		Logger:      logs,
 		RequestedIP: requestedIP,
 		UDPPorts:    udpPorts,
 	})
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("setup failed: %w", err.Error())
 	}
@@ -98,7 +93,7 @@ func (c *ntpConn) String() string {
 func (c *ntpConn) GetNTPTime() (time.Time, error) {
 	ntpaddr := c.addrs[0]
 	ntpc := stacks.NewNTPClient(c.stack, ntp.ClientPort)
-	fmt.Println("NTP request to", ntpaddr.String())
+	logger.Logger.Info("NTP request to", ntpaddr.String())
 	// Démarrer la requête NTP
 	// Note: BeginDefaultRequest() est non-bloquant, il faut attendre avec IsDone()
 	err := ntpc.BeginDefaultRequest(c.routerhw, ntpaddr)
@@ -107,9 +102,8 @@ func (c *ntpConn) GetNTPTime() (time.Time, error) {
 	}
 	for !ntpc.IsDone() {
 		time.Sleep(time.Second)
-		//println("still ntping")
+		logger.Logger.Info("still ntping")
 	}
 	t := ntp.BaseTime().Add(ntpc.Offset())
 	return t, nil
 }
-
