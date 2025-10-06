@@ -5,15 +5,15 @@ package main
 import (
 	"fmt"
 	"machine"
-	"time"
 	"pico-rtc/logger"
+	"time"
 
 	font "github.com/Nondzu/ssd1306_font"
-	"pico-rtc/rtcutil" // remplace par ton module si publié
 	ntp "pico-rtc/ntputil"
+	"pico-rtc/rtcutil" // remplace par ton module si publié
 	"pico-rtc/ssd1306x"
 )
-	
+
 func main() {
 
 	// Initialisation du port série pour le debug
@@ -41,7 +41,7 @@ func main() {
 	logger.Logger.Info("NTP dhcp started ...")
 	display.PrintText("Dhcp started...") // print text
 	disp.ClearBuffer()
-	
+
 	// Initialiser le Wi-Fi et la connexion NTP
 	conn, err := ntp.NewNTPConn("Pico2-w", "192.168.1.149", 10, logger.Logger)
 	if err != nil {
