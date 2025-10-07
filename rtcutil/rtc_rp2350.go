@@ -7,62 +7,53 @@ import (
 	"time"
 )
 
-// RP2350 : pas de RTC calendrier exposé → Simule via un temps monotone.
-// RTC : Now() = base + (monotonic_now - monotonic_base).
-// Avantages : pas de registres spécifiques, pas de dérive sur reset logiciel,
-// et fonctionne tant que l’horloge monotone TinyGo tourne (toujours le cas).
-// Inconvénient : pas de persistance sur coupure totale d’alimentation.
+// RP2350: Simulated RTC via monotonic clock.
+// We anchor the “wall" time (UTC) to a time.Now() (monotonic included).
+// Now() = anchorWall + time.Since(anchorMono)
 type rtcRP2350 struct {
-	mu        sync.Mutex
-	setBase   time.Time
-	ticksBase uint64
-	inited    bool
-	freqHz    uint64 // ticks/s pour nowTicks() ; ici 1 tick = 1 ns (UnixNano)
+	mu         sync.Mutex
+	anchorMono time.Time // instant monotone au Set()
+	anchorWall time.Time // heure "mur" voulue au Set() (UTC)
+	inited     bool
 }
 
-// newRTC creates and returns a new instance of RTC configured for the RP2350 platform.
-// The returned RTC uses a frequency of 1 GHz (1,000,000,000 Hz).
-func newRTC() RTC { return &rtcRP2350{freqHz: 1_000_000_000} }
+// newRTC creates and returns a new instance of the RTC implementation for the RP2350 platform.
+// It returns an RTC interface that can be used to interact with the real-time clock hardware.
+func newRTC() RTC { return &rtcRP2350{} }
 
 // Init1Hz initializes the RTC to generate a 1Hz signal.
-// In simulation mode, this function is a no-op as there is no hardware divider to configure.
-// The input parameter is ignored.
+// For the simulated version, this function is a no-op.
 func (r *rtcRP2350) Init1Hz(_ uint32) {
-	// No-op en mode simulation (pas de diviseur matériel à régler).
+	// no-op pour la version simulée
 }
 
-// Set initializes the RTC with the provided time value.
-// It sets the base time to the given UTC time, records the current tick count,
-// and marks the RTC as initialized. This method is thread-safe.
+// Set initializes the rtcRP2350 instance with the provided wall clock time.
+// It locks the mutex to ensure thread safety, sets the current monotonic time as an anchor,
+// stores the provided time in UTC as the wall clock reference, and marks the RTC as initialized.
 func (r *rtcRP2350) Set(t time.Time) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.setBase = t.UTC()
-	r.ticksBase = r.nowTicks()
+	r.anchorMono = time.Now()    // porte l'horloge monotone
+	r.anchorWall = t.UTC()       // stocke l'heure mur de référence
 	r.inited = true
 }
 
-// Now returns the current time as maintained by the rtcRP2350 instance.
+// Now returns the current wall-clock time as tracked by the rtcRP2350 instance.
 // If the RTC has not been initialized, it returns the Unix epoch (UTC).
-// The method calculates the elapsed ticks since initialization, converts them
-// to nanoseconds based on the RTC frequency, and adds the duration to the base time.
-// This function is safe for concurrent use.
+// The method calculates the elapsed time since the last anchor point using a monotonic clock,
+// and adds this duration to the anchored wall time. If the elapsed time is negative or exceeds
+// 24 hours (as a safeguard against anomalies), it is reset to zero.
 func (r *rtcRP2350) Now() time.Time {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if !r.inited {
 		return time.Unix(0, 0).UTC()
 	}
-	cur := r.nowTicks()
-	dt := cur - r.ticksBase
-	ns := (dt * 1_000_000_000) / r.freqHz
-	return r.setBase.Add(time.Duration(ns) * time.Nanosecond)
-}
-
-// Backend ticks : par défaut, horloge monotone (1 tick = 1 ns)
-// nowTicks returns the current time in nanoseconds as a uint64 value.
-// It uses time.Now().UnixNano() to obtain the current timestamp.
-// This can be used for high-resolution time measurements.
-func (r *rtcRP2350) nowTicks() uint64 {
-	return uint64(time.Now().UnixNano())
+	// durée écoulée selon l’horloge monotone
+	elapsed := time.Since(r.anchorMono)
+	// garde-fou simple en cas d’anomalie
+	if elapsed < 0 || elapsed > 24*time.Hour {
+		elapsed = 0
+	}
+	return r.anchorWall.Add(elapsed)
 }

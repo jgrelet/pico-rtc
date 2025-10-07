@@ -15,7 +15,8 @@ const (
 
 type rtcRP2040 struct{}
 
-// newRTC creates and returns a new instance of RTC implemented for the RP2040 platform.
+// newRTC creates and returns a new instance of the RTC interface implemented by rtcRP2040.
+// This function abstracts the instantiation of the RTC implementation specific to the RP2040 platform.
 func newRTC() RTC { return &rtcRP2040{} }
 
 // Init1Hz initializes the RTC to generate a 1 Hz clock signal.
