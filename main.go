@@ -5,13 +5,13 @@ package main
 import (
 	"fmt"
 	"machine"
-	"pico-rtc/logger"
 	"time"
 
 	font "github.com/Nondzu/ssd1306_font"
-	ntp "pico-rtc/ntputil"
-	"pico-rtc/rtcutil" // remplace par ton module si publié
-	"pico-rtc/ssd1306x"
+	ntp "github.com/jgrelet/pico-rtc/ntputil"
+	"github.com/jgrelet/pico-rtc/rtcutil" // remplace par ton module si publié
+	"github.com/jgrelet/pico-rtc/ssd1306x"
+	"github.com/jgrelet/pico-rtc/logger"
 )
 
 func main() {

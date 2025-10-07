@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net/netip"
 	"time"
-	"pico-rtc/logger"
+	"github.com/jgrelet/pico-rtc/logger"
 
 	"github.com/soypat/cyw43439/examples/common"
 	"github.com/soypat/seqs/eth/ntp"

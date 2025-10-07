@@ -1,4 +1,4 @@
-module pico-rtc
+module github.com/jgrelet/pico-rtc
 
 go 1.25.0
 
