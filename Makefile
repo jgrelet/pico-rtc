@@ -5,7 +5,7 @@ RP2040 = pico-w
 SOURCE = .
 BINARY = main.uf2
 #LDFLAGS = -size short -monitor -scheduler tasks -gc=conservative -size=full -stack-size=20kb
-LDFLAGS = -size short -monitor 
+LDFLAGS = -opt=1 -size short -monitor 
 
 build:
 	tinygo build -o $(BINARY) -target $(TARGET) $(LDFLAGS) $(SOURCE)
@@ -21,6 +21,15 @@ debug:
 	
 monitor: 
 	tinygo monitor -target=$(TARGET)	
+
+gotests:
+	gotests -all -ai -w *.go
+
+gotestsall:
+	gotests -all -ai -w ./...
+
+test:
+	go test -v ./...
 
 fmt:
 	go fmt *.go

@@ -51,6 +51,7 @@ func main() {
 		return
 	}
 	logger.Logger.Info(conn.String())
+	println(conn.String())
 
 	now, err := conn.GetNTPTime()
 	if err != nil {
@@ -62,6 +63,8 @@ func main() {
 	}
 	display.YPos = 12
 	display.PrintText("NTP OK")
+	disp.Display()
+	println("NTP OK")
 	rtc := rtcutil.NewRTC()
 
 	// RP2040: calibre 1 Hz (0 => fréquence par défaut 46875 Hz)
@@ -77,7 +80,7 @@ func main() {
 		// Lire l'heure "RTC"
 		now := rtc.Now()
 		//dev.ClearDisplay()
-		//println(now.Format("15:04:05 02/01/2006"))
+		println(now.Format("15:04:05 02/01/2006"))
 		display.YPos = 0
 		display.PrintText(now.Format("15:04:05 02/01/06"))
 		disp.Display()
